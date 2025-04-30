@@ -85,6 +85,32 @@ function DataGrid<T>({
       })
     : data;
 
+
+    const filteredData = filters && Object.keys(filters).length
+    ? sortedData.filter((item) => {
+        return Object.entries(filters).every(([key, value]) => {
+          const col = columns.find((c) => c.key === key);
+          if (col?.onFilter) {
+            return col.onFilter(value, item);
+          }
+          return String((item as Record<string, any>)[key]).toLowerCase().includes(String(value).toLowerCase());
+          // return String(item[key]).toLowerCase().includes(String(value).toLowerCase());
+        });
+      })
+    : sortedData;
+
+  const searchData = searchQuery && searchQuery.key
+    ? filteredData.filter((item) => {
+        const col = columns.find((c) => c.key === searchQuery.key);
+        if (col?.onSearch) {
+          return col.onSearch(searchQuery.value, item);
+        }
+        return String((item as Record<string, any>)[searchQuery.key]).toLowerCase().includes(searchQuery.value.toLowerCase());
+        // return String(item[searchQuery.key]).toLowerCase().includes(searchQuery.value.toLowerCase());
+      })
+    : filteredData;
+
+
   const renderCell = (value: any, column: any, record: any, index: number, className: string) => {
     switch (column.type) {
       case 'heatmap':
@@ -178,7 +204,7 @@ function DataGrid<T>({
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((record, index) => {
+          {searchData.map((record, index) => {
             const dynamicClass = rowClass ? rowClass(record, index) : '';
             return (
               <tr key={index} className={`hover:bg-gray-50 ${dynamicClass}`}>
