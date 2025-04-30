@@ -25,11 +25,7 @@ export default function UsersPage() {
       pagination: { page: 1, size: 10 },
       sort: { key: '', direction: 'asc' },
       total: 0
-    });
-    const [filters, setFilters] = useState<{ [key: string]: any }>({});
-    const [searchQuery, setSearchQuery] = useState<{ [key: string]: string }>({});
-    const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-    const [pagination, setPagination] = useState<{ page: number; size: number }>({ page: 1, size: 10 });
+    });    
     const [totalSize, setTotalSize] = useState<number>(0);
   
     useEffect(() => {
@@ -78,14 +74,9 @@ export default function UsersPage() {
       sortConfig: any;
       pagination: any;
     }) => {
-      setFilters(changes.filters);
-      setSearchQuery(changes.searchQuery);
-      setSortConfig(changes.sortConfig);
-      setPagination(changes.pagination);
-  
       const newFilters = Object.entries(changes.filters || {}).map(([key, value]) => ({ key, value }));
-      const newSearchKey = Object.keys(changes.searchQuery || {})[0] || '';
-      const newSearchValue = Object.values(changes.searchQuery || {})[0] || '';
+      const newSearchKey = changes.searchQuery?.key || '';
+      const newSearchValue = changes.searchQuery?.value || '';
       const newSortKey = changes.sortConfig?.key || '';
       const newSortDirection = changes.sortConfig?.direction || 'asc';
     
@@ -116,10 +107,10 @@ export default function UsersPage() {
             data={users}
             totalSize={totalSize}
             onChange={handleTableChange}
-            filters={filters}
-            searchQuery={searchQuery}
-            pagination={pagination}
-            sortConfig={sortConfig}
+            filters={Object.fromEntries(tableParams.filters.map(f => [f.key, f.value]))}
+            searchQuery={tableParams.search}
+            pagination={tableParams.pagination}
+            sortConfig={tableParams.sort}          
             rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}
           />
         )}

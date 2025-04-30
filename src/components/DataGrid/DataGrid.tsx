@@ -15,13 +15,13 @@ function DataGrid<T>({
   totalSize,
   onChange,
   filters: parentFilters = {},
-  searchQuery: parentSearchQuery = {},
+  searchQuery: parentSearchQuery = null,
   sortConfig: parentSortConfig = null,
   pagination: parentPagination = { page: 1, size: 10 },
   rowClass
 }: DataGridProps<T>) {
   const [filters, setFilters] = useState<{ [key: string]: any }>(parentFilters);
-  const [searchQuery, setSearchQuery] = useState<{ [key: string]: string }>(parentSearchQuery);
+  const [searchQuery, setSearchQuery] = useState<{ key: string; value: string } | null>(parentSearchQuery);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(parentSortConfig);
   const [openSearchPopover, setOpenSearchPopover] = useState<string | null>(null);
   const [openFilterPopover, setOpenFilterPopover] = useState<string | null>(null);
@@ -40,12 +40,16 @@ function DataGrid<T>({
     }
   }, [filters, searchQuery, sortConfig, pagination]);
 
-  const handleFilterChange = (dataIndex: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [dataIndex]: value }));
+  const handleFilterChange = (key: string, value: string | null) => {
+    if (value === null) {
+      setFilters({});
+    } else {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+    }
   };
 
-  const handleSearchChange = (dataIndex: any, value: string) => {
-    setSearchQuery((prev) => ({ ...prev, [dataIndex]: value }));
+  const handleSearchChange = (key: any, value: string) => {
+    setSearchQuery((prev) => ({ ...prev, key, value}));
   };
 
   const handleSortChange = (dataKey: any) => {
@@ -157,7 +161,7 @@ function DataGrid<T>({
                         {openSearchPopover === col.key && (
                           <div className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
                             <SearchPopover
-                              value={searchQuery[col.key] || ''}
+                              value={searchQuery?.value || ''}
                               onApply={(value) => {
                                 handleSearchChange(col.key, value);
                                 setOpenSearchPopover(null);
