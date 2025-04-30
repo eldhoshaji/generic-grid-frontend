@@ -18,9 +18,10 @@ const Pagination: React.FC<PaginationProps> = ({
   const totalPages = Math.ceil(totalSize / pageSize);
 
   return (
-    <div className="flex justify-between items-center mt-4 px-4 text-sm text-gray-600">
+    <div data-testid="pagination" className="flex justify-between items-center mt-4 px-4 text-sm text-gray-600">
       <div className="flex items-center gap-2">
         <button
+          data-testid="pagination-previous"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
           className="px-3 py-1 border rounded disabled:opacity-50"
@@ -31,6 +32,7 @@ const Pagination: React.FC<PaginationProps> = ({
           Page {page} of {totalPages} | Total Records: {totalSize}
         </span>
         <button
+          data-testid="pagination-next"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
           className="px-3 py-1 border rounded disabled:opacity-50"

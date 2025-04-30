@@ -9,6 +9,6 @@ describe('Page', () => {
     const heading = screen.getByRole('heading', { level: 1 })
     
     expect(heading).toBeInTheDocument()
-    expect(heading).toHaveTextContent('Smart Configurable Table')
+    expect(heading).toHaveTextContent('Welcome to the Dashboard')
   })
 })
