@@ -2,6 +2,7 @@ import React from 'react';
 
 interface TagsProps {
   tags: string[];
+  className?: string; // Added className as an optional prop
 }
 
 const getTagColor = (tag: string) => {
@@ -10,9 +11,9 @@ const getTagColor = (tag: string) => {
   return '#52c41a'; // green
 };
 
-const Tags: React.FC<TagsProps> = ({ tags }) => {
+const Tags: React.FC<TagsProps> = ({ tags, className }) => {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+    <div className={className} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
       {tags.map((tag, index) => (
         <span
           key={index}
