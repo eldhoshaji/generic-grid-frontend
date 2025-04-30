@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Prerequisites
+
+Make sure you have [Node.js](https://nodejs.org/en) installed on your machine.
+
 ## Getting Started
 
 First, run the development server:
@@ -19,6 +23,32 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+
+## Testing
+
+This project uses [Jest](https://jestjs.io/) along with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for unit and integration testing.
+
+To run the test suite:
+
+bash
+```
+npm run test
+```
+
+Test files are located inside the __test__/ directory.
+
+## Project Structure
+```
+__test__/                 # Contains test files
+src/components/           # Generic reusable components
+  └── DataGrid.tsx        # DataGrid component
+app/[resources]/          # Dynamic routes based on resource type (e.g. users, products, price_comparison)
+                          # Each page fetches table config from backend based on the resource value
+app/data-grid/            # Visualized dummy table showcasing frontend-only column/row config
+app/utils/                # Utilities for table column rendering and row styling
+```
+
 
 ## Learn More
 
