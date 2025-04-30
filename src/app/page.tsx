@@ -1,0 +1,129 @@
+'use client';
+
+import DataGrid from '@/components/DataGrid/DataGrid';
+import { useEffect, useState, useCallback } from 'react';
+import { fetchTableData, fetchTableConfig } from '@/app/services/tableService';
+import { UserResponseModel } from '@/app/types/api/UserResponseModel';
+import { TableParams, TableConfigResponseModel, ColumnConfig, RowStyleRule } from '@/app/types/api/TableModel';
+import { mapConfigToColumns } from '@/app/utils/tableHelper';
+import { getRowClassFromRules } from './utils/getRowClassFromRules';
+
+export default function Home() {
+  const [users, setUsers] = useState<UserResponseModel[]>([]);
+  const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>([]);
+  const [rowStyleRules, setRowStyleRules] = useState<RowStyleRule[]>([]);
+
+  const [loadingConfig, setLoadingConfig] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [tableParams, setTableParams] = useState<TableParams>({
+    search: { key: '', value: '' },
+    filters: [],
+    pagination: { page: 1, size: 10 },
+    sort: { key: '', direction: 'asc' },
+    total: 0
+  });
+  const [filters, setFilters] = useState<{ [key: string]: any }>({});
+  const [searchQuery, setSearchQuery] = useState<{ [key: string]: string }>({});
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [pagination, setPagination] = useState<{ page: number; size: number }>({ page: 1, size: 10 });
+  const [totalSize, setTotalSize] = useState<number>(0);
+
+
+  useEffect(() => {
+    loadTableConfig();
+  }, []);
+
+  const loadTableConfig = async () => {
+    setLoadingConfig(true);
+    try {
+      const config = await fetchTableConfig<TableConfigResponseModel>('users');
+      const mappedColumns = mapConfigToColumns(config.column_configs);
+      setColumnConfigs(mappedColumns);
+      setRowStyleRules(config.row_style_rules)
+    } catch (error) {
+      console.error('Failed to load config', error);
+    } finally {
+      setLoadingConfig(false);
+    }
+  };
+
+  const loadUsers = useCallback(async (params: TableParams) => {
+    setLoadingUsers(true);
+    try {
+      const data = await fetchTableData<UserResponseModel>('users', params);
+      setUsers(data.items);
+      setTotalSize(data.total);
+    } catch (error) {
+      console.error('Failed to load users', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  }, []);
+
+  // Load users whenever tableParams change — but ONLY after config is loaded
+  useEffect(() => {
+    if (columnConfigs.length > 0 && !loadingConfig) {
+      loadUsers(tableParams);
+    }
+  }, [tableParams, columnConfigs, rowStyleRules, loadingConfig, loadUsers]);
+
+  const handleTableChange = (changes: { 
+    filters: any; 
+    searchQuery: any; 
+    sortConfig: any;
+    pagination: any;
+  }) => {
+    setFilters(changes.filters);
+    setSearchQuery(changes.searchQuery);
+    setSortConfig(changes.sortConfig);
+    setPagination(changes.pagination);
+
+    const newFilters = Object.entries(changes.filters || {}).map(([key, value]) => ({ key, value }));
+    const newSearchKey = Object.keys(changes.searchQuery || {})[0] || '';
+    const newSearchValue = Object.values(changes.searchQuery || {})[0] || '';
+    const newSortKey = changes.sortConfig?.key || '';
+    const newSortDirection = changes.sortConfig?.direction || 'asc';
+  
+    const newPage = changes.pagination?.page ?? tableParams.pagination.page;
+    const newSize = changes.pagination?.size ?? tableParams.pagination.size;
+  
+    const newParams: TableParams = {
+      ...tableParams,
+      filters: newFilters,
+      search: { key: newSearchKey, value: newSearchValue },
+      sort: { key: newSortKey, direction: newSortDirection },
+      pagination: { page: newPage, size: newSize },
+    };
+  
+    const paramsChanged = JSON.stringify(newParams) !== JSON.stringify(tableParams);
+    if (paramsChanged) {
+      setTableParams(newParams);
+    }
+  };
+
+  const isLoading = loadingConfig || loadingUsers;
+
+
+  
+  return (
+    <main className="p-8">
+      <h1 className="text-xl font-bold mb-4">Smart Configurable Table</h1>
+
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <DataGrid 
+          columns={columnConfigs} 
+          data={users}
+          totalSize={totalSize}
+          onChange={handleTableChange}
+          filters={filters}
+          searchQuery={searchQuery}
+          pagination={pagination}
+          sortConfig={sortConfig}
+          rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}  
+        />
+      )}
+    </main>
+  );
+}
