@@ -81,19 +81,25 @@ function DataGrid<T>({
       })
     : data;
 
-  const renderCell = (value: any, column: any, record: any, index: number) => {
+  const renderCell = (value: any, column: any, record: any, index: number, className: string) => {
     switch (column.type) {
       case 'heatmap':
-        return <Heatmap value={value} min={0} max={100} />;
+        return <Heatmap value={value} min={0} max={100} className={className} />;
       case 'tags':
-        return <Tags tags={value} key={value.join(',')} />;
+        return <Tags tags={value} key={value.join(',')} className={className} />;
       case 'link':
-        return <Link value={value} text={column.linkText} />;
-      case 'datetime':
-        return <DateTime timestamp={value} />;
+        return <Link value={value} text={column.linkText} className={className} />;
+      case 'date':
+        return <DateTime timestamp={value} className={className} />;
+      case 'currency':
+        return (<span className={className}> £{value}</span>);
       default:
-        return column.render ? column.render(value, record, index) : String(value);
-    }
+        return (
+          <span className={className}>
+            {column.render ? column.render(value, record, index) : <span>{String(value)}</span>}
+          </span>
+        )
+      }
   };
 
   return (
@@ -176,8 +182,8 @@ function DataGrid<T>({
                   type DataRecord = Record<string, any>; // allows string-keyed access
                   const value = (record as DataRecord)[col.key];
                   return (
-                    <td key={String(col.key)} className="px-4 h-12 text-sm text-gray-700 border-b border-gray-200">
-                      {renderCell(value, col, record, index)}
+                    <td key={String(col.key)} className="h-12 text-sm text-gray-700 border-b border-gray-200">
+                      {renderCell(value, col, record, index, 'px-4')}
                     </td>
                   );
                 })}
