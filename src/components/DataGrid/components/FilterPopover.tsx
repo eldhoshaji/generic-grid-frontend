@@ -7,7 +7,7 @@ interface FilterPopoverProps {
   dataIndex: string;
   filterOptions?: { text: string; value: any }[];
   enableSearch?: boolean;
-  onFilterChange: (dataIndex: string, value: string) => void;
+  onFilterChange: (dataIndex: string, value: string | null) => void;
   onClose: () => void;
 }
 
@@ -42,7 +42,7 @@ export default function FilterPopover({
           onChange={(e) => onFilterChange(dataIndex, e.target.value)}
           value={filters[dataIndex] || ''}
         >
-          <option value="">All</option>
+          {/* <option value="">All</option> */}
           {filterOptions.map((f) => (
             <option key={f.value} value={f.value}>
               {f.text}
@@ -50,12 +50,20 @@ export default function FilterPopover({
           ))}
         </select>
       )}
-      <button
-        className="block w-full mt-1 bg-blue-500 text-white py-1 rounded text-sm"
-        onClick={onClose}
-      >
-        Apply
-      </button>
+      <div className='flex gap-2'>
+        <button
+          className="block w-full mt-1 bg-red-400 text-white py-1 rounded text-sm"
+          onClick={()=>onFilterChange(dataIndex, null)}
+        >
+          Clear
+        </button>
+        <button
+          className="block w-full mt-1 bg-blue-400 text-white py-1 rounded text-sm"
+          onClick={onClose}
+        >
+          Apply
+        </button>
+      </div>
     </div>
   );
 }

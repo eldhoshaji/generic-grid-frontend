@@ -21,12 +21,12 @@ export type ColumnType<T> = {
     totalSize: number;
     onChange?: (params: {
       filters: { [key: string]: any };
-      searchQuery: { [key: string]: string };
+      searchQuery: { key: string; value: string; } | null;  
       sortConfig: { key: string; direction: 'asc' | 'desc' } | null;
       pagination: { page: number, size: number };
     }) => void;  
     filters: { [key: string]: any };
-    searchQuery: { [key: string]: string };
+    searchQuery: { key: string; value: string; } | null;  
     sortConfig: { key: string; direction: 'asc' | 'desc' } | null;  
     pagination: { page: number, size: number };
     rowClass?: (record: T, index: number) => string;
