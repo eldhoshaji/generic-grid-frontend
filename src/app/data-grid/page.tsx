@@ -14,7 +14,24 @@ type User = {
 const initialUsers: User[] = [
   { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin' },
   { id: 2, name: 'Bob', email: 'bob@example.com', role: 'User' },
-  { id: 3, name: 'Charlie', email: 'charlie@example.com', role: 'User' }
+  { id: 3, name: 'Charlie', email: 'charlie@example.com', role: 'User' },
+  { id: 4, name: 'David', email: 'david@example.com', role: 'Admin' },
+  { id: 5, name: 'Eve', email: 'eve@example.com', role: 'User' },
+  { id: 6, name: 'Frank', email: 'frank@example.com', role: 'Admin' },
+  { id: 7, name: 'Grace', email: 'grace@example.com', role: 'User' },
+  { id: 8, name: 'Hank', email: 'hank@example.com', role: 'Admin' },
+  { id: 9, name: 'Ivy', email: 'ivy@example.com', role: 'User' },
+  { id: 10, name: 'Jack', email: 'jack@example.com', role: 'Admin' },
+  { id: 11, name: 'Karen', email: 'karen@example.com', role: 'User' },
+  { id: 12, name: 'Leo', email: 'leo@example.com', role: 'Admin' },
+  { id: 13, name: 'Mona', email: 'mona@example.com', role: 'User' },
+  { id: 14, name: 'Nate', email: 'nate@example.com', role: 'Admin' },
+  { id: 15, name: 'Olivia', email: 'olivia@example.com', role: 'User' },
+  { id: 16, name: 'Paul', email: 'paul@example.com', role: 'Admin' },
+  { id: 17, name: 'Quinn', email: 'quinn@example.com', role: 'User' },
+  { id: 18, name: 'Rachel', email: 'rachel@example.com', role: 'Admin' },
+  { id: 19, name: 'Steve', email: 'steve@example.com', role: 'User' },
+  { id: 20, name: 'Tina', email: 'tina@example.com', role: 'Admin' },
 ];
 
 const columnConfigs: ColumnType<User>[] = [
@@ -64,7 +81,7 @@ const rowStyleRules: RowStyleRule[] = [
   },
 ];
 
-export default function UsersStaticPage() {
+export default function DataGridStaticPage() {
 
   return (
     <main className="p-8">
@@ -76,6 +93,7 @@ export default function UsersStaticPage() {
         searchQuery={null}
         pagination={{page: 1, size: 10}}
         sortConfig={null}
+        enablePagination={true}
         rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}
       />
     </main>

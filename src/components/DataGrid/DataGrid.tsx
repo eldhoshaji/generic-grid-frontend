@@ -18,7 +18,8 @@ function DataGrid<T>({
   searchQuery: parentSearchQuery = null,
   sortConfig: parentSortConfig = null,
   pagination: parentPagination = { page: 1, size: 10 },
-  rowClass
+  rowClass,
+  enablePagination = false
 }: DataGridProps<T>) {
   const [filters, setFilters] = useState<{ [key: string]: any }>(parentFilters);
   const [searchQuery, setSearchQuery] = useState<{ key: string; value: string } | null>(parentSearchQuery);
@@ -94,7 +95,6 @@ function DataGrid<T>({
             return col.onFilter(value, item);
           }
           return String((item as Record<string, any>)[key]).toLowerCase().includes(String(value).toLowerCase());
-          // return String(item[key]).toLowerCase().includes(String(value).toLowerCase());
         });
       })
     : sortedData;
@@ -106,9 +106,15 @@ function DataGrid<T>({
           return col.onSearch(searchQuery.value, item);
         }
         return String((item as Record<string, any>)[searchQuery.key]).toLowerCase().includes(searchQuery.value.toLowerCase());
-        // return String(item[searchQuery.key]).toLowerCase().includes(searchQuery.value.toLowerCase());
       })
     : filteredData;
+
+  const paginatedData = enablePagination
+  ? searchData.slice(
+      (pagination.page - 1) * pagination.size,
+      pagination.page * pagination.size
+    )
+  : searchData;
 
 
   const renderCell = (value: any, column: any, record: any, index: number, className: string) => {
@@ -138,7 +144,7 @@ function DataGrid<T>({
         <thead className="bg-gray-100">
           <tr>
             {columns.map((col) => (
-              <th key={String(col.key)} className="relative p-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+              <th key={String(col.key)}   data-testid={`header-${col.key}`} className="relative p-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                 <div className="flex items-center justify-between">
                   <span>{col.title}</span>
                   <div className="flex gap-2">
@@ -162,12 +168,15 @@ function DataGrid<T>({
                     )}
                     {col.filterable && (
                       <div>
-                        <button onClick={() => setOpenFilterPopover(openFilterPopover === col.key ? null : col.key)}>
+                        <button 
+                          data-testid={`filter-button-${col.key}`}
+                          onClick={() => setOpenFilterPopover(openFilterPopover === col.key ? null : col.key)}>
                           <Image src="/filter.png" alt="Filter Icon" width={12} height={12} />
                         </button>
                         {openFilterPopover === col.key && (
                           <div className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
                             <FilterPopover
+                              data-testid={`filter-popover-${col.key}`}
                               isOpen={true}
                               filters={filters}
                               dataIndex={col.key}
@@ -181,12 +190,15 @@ function DataGrid<T>({
                     )}
                     {col.searchable && (
                       <div>
-                        <button onClick={() => setOpenSearchPopover(openSearchPopover === col.key ? null : col.key)}>
+                        <button 
+                          data-testid={`search-button-${col.key}`}
+                          onClick={() => setOpenSearchPopover(openSearchPopover === col.key ? null : col.key)}>
                           <Image src="/search.png" alt="Search Icon" width={12} height={12} />
                         </button>
                         {openSearchPopover === col.key && (
                           <div className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
                             <SearchPopover
+                              data-testid={`search-popover-${col.key}`}
                               value={searchQuery?.value || ''}
                               onApply={(value) => {
                                 handleSearchChange(col.key, value);
@@ -204,15 +216,15 @@ function DataGrid<T>({
           </tr>
         </thead>
         <tbody>
-          {searchData.map((record, index) => {
+          {paginatedData.map((record, index) => {
             const dynamicClass = rowClass ? rowClass(record, index) : '';
             return (
-              <tr key={index} className={`hover:bg-gray-50 ${dynamicClass}`}>
+              <tr data-testid={`row-${index}`} key={index} className={`hover:bg-gray-50 ${dynamicClass}`}>
                 {columns.map((col) => {
                   type DataRecord = Record<string, any>; // allows string-keyed access
                   const value = (record as DataRecord)[col.key];
                   return (
-                    <td key={String(col.key)} className="h-12 text-sm text-gray-700 border-b border-gray-200">
+                    <td key={String(col.key)} data-testid={`cell-${index}-${col.key}`} className="h-12 text-sm text-gray-700 border-b border-gray-200">
                       {renderCell(value, col, record, index, 'px-4')}
                     </td>
                   );

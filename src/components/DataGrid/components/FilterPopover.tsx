@@ -24,6 +24,7 @@ export default function FilterPopover({
 
   return (
     <div
+      data-testid="filter-popover"
       className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-10 p-2"
       onClick={(e) => e.stopPropagation()}
     >
@@ -40,9 +41,9 @@ export default function FilterPopover({
         <select
           className="block w-full p-2 mb-2 border rounded text-sm"
           onChange={(e) => onFilterChange(dataIndex, e.target.value)}
+          data-testid={`filter-select-${dataIndex}`}
           value={filters[dataIndex] || ''}
         >
-          {/* <option value="">All</option> */}
           {filterOptions.map((f) => (
             <option key={f.value} value={f.value}>
               {f.text}
@@ -52,12 +53,14 @@ export default function FilterPopover({
       )}
       <div className='flex gap-2'>
         <button
+          data-testid="filter-popover-clear"
           className="block w-full mt-1 bg-red-400 text-white py-1 rounded text-sm"
           onClick={()=>onFilterChange(dataIndex, null)}
         >
           Clear
         </button>
         <button
+          data-testid="filter-popover-apply"
           className="block w-full mt-1 bg-blue-400 text-white py-1 rounded text-sm"
           onClick={onClose}
         >

@@ -1,78 +1,74 @@
-import '@testing-library/jest-dom'
-import { render, screen, fireEvent } from '@testing-library/react';
-import DataGrid from '../../src/components/DataGrid/DataGrid'
+'use client';
 
-test('renders DataGrid component', () => {
-  const columns = [
-    { key: 'name', title: 'Name', sortable: true },
-    { key: 'age', title: 'Age' },
-  ];
+import { render, screen, fireEvent, within } from '@testing-library/react';
+import DataGridStaticPage from '../../src/app/data-grid/page';
+import '@testing-library/jest-dom';
+
+describe('UsersStaticPage DataGrid tests', () => {
+
+  beforeEach(() => {
+    render(<DataGridStaticPage />);
+  });
+
+  test('renders all users', () => {
+    expect(screen.getByTestId('cell-0-name')).toHaveTextContent('Alice');
+    expect(screen.getByTestId('cell-1-name')).toHaveTextContent('Bob');
+    expect(screen.getByTestId('cell-2-name')).toHaveTextContent('Charlie');
+  });
+
+  test('sorts by name ascending', () => {
+    fireEvent.click(screen.getByTestId('sort-button-name'));
+
+    const firstRowName = screen.getByTestId('cell-0-name');
+    expect(firstRowName).toHaveTextContent('Alice'); // assuming sorted order
+  });
+
+  test('sorts by name descending', () => {
+    fireEvent.click(screen.getByTestId('sort-button-name')); // Ascending
+    fireEvent.click(screen.getByTestId('sort-button-name')); // Descending
+
+    const firstRowName = screen.getByTestId('cell-0-name');
+    expect(firstRowName).toHaveTextContent('Tina');
+  });
+
+  test('filters by role: Admin', () => {
+    fireEvent.click(screen.getByTestId('filter-button-role'));
   
-  const data = [
-    { name: 'John', age: 30 },
-    { name: 'Jane', age: 25 },
-  ];
+    const popover = screen.getByTestId('filter-popover');
+    const select = within(popover).getByTestId('filter-select-role');
+  
+    fireEvent.change(select, { target: { value: 'Admin' } });
+  
+    const applyButton = within(popover).getByTestId('filter-popover-apply');
+    fireEvent.click(applyButton);
+  
+    expect(screen.getByTestId('cell-0-name')).toHaveTextContent('Alice');
+    expect(screen.queryByTestId('cell-1-name')).not.toHaveTextContent('Bob');
+  });
 
-  const totalSize = 2;
+  test('searches by name', () => {
+    fireEvent.click(screen.getByTestId('search-button-name'));
+  
+    const popover = screen.getByTestId('search-popover');
+    const searchInput = within(popover).getByTestId('search-popover-input');
+    fireEvent.change(searchInput, { target: { value: 'ali' } });
+  
+    const applyButton = within(popover).getByTestId('search-popover-apply');
+    fireEvent.click(applyButton);
+  
+    expect(screen.getByTestId('cell-0-name')).toHaveTextContent('Alice');
+    expect(screen.queryByTestId('cell-1-name')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cell-2-name')).not.toBeInTheDocument();
+  });
 
-  // Provide default values for missing props
-  render(
-    <DataGrid
-      columns={columns}
-      data={data}
-      totalSize={totalSize}
-      filters={{}} 
-      searchQuery={{}}
-      sortConfig={null}
-      pagination={{ page: 1, size: 10 }}
-    />
-  );
+  test('pagination works correctly', () => {
+    const pagination = screen.getByTestId('pagination');
+    const paginationNext = within(pagination).getByTestId('pagination-next');
 
-  expect(screen.getByText('Name')).toBeInTheDocument();
-  expect(screen.getByText('Age')).toBeInTheDocument();
+    fireEvent.click(paginationNext);
+  
+    // Example: assuming second page contains user "David"
+    expect(screen.getByTestId('cell-0-name')).toHaveTextContent('Karen');
+  });  
 
-  // Assert that the table data is rendered
-  expect(screen.getByText('John')).toBeInTheDocument();
-  expect(screen.getByText('Jane')).toBeInTheDocument();
-  expect(screen.getByText('30')).toBeInTheDocument();
-  expect(screen.getByText('25')).toBeInTheDocument();
-});
-
-
-test('sorts data when the sort button is clicked', () => {
-  const columns = [
-    { key: 'name', title: 'Name', sortable: true },
-    { key: 'age', title: 'Age', sortable: true },
-  ];
-
-  const data = [
-    { name: 'Jane', age: 25 },
-    { name: 'John', age: 30 },
-  ];
-
-  const totalSize = 2;
-
-  render(
-    <DataGrid
-      columns={columns}
-      data={data}
-      totalSize={totalSize}
-      filters={{}} 
-      searchQuery={{}}
-      sortConfig={null}
-      pagination={{ page: 1, size: 10 }}
-    />
-  );
-
-  // Click the sort button for "Name" column
-  const sortButton = screen.getByTestId('sort-button-name');
-  expect(sortButton).toBeTruthy();
-  if (sortButton) fireEvent.click(sortButton);
-
-  // Find all name cells
-  const nameCells = screen.getAllByRole('cell', { name: /jane|john/i });
-
-  // Check that Jane is first, then John
-  expect(nameCells[0]).toHaveTextContent('Jane');
-  expect(nameCells[1]).toHaveTextContent('John');
 });

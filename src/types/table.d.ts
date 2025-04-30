@@ -29,5 +29,6 @@ export type ColumnType<T> = {
     searchQuery: { key: string; value: string; } | null;  
     sortConfig: { key: string; direction: 'asc' | 'desc' } | null;  
     pagination: { page: number, size: number };
+    enablePagination?: boolean;
     rowClass?: (record: T, index: number) => string;
   };
