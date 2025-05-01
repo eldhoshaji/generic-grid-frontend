@@ -57,6 +57,11 @@ const columnConfigs: ColumnType<User>[] = [
     title: 'Email',
     sortable: false,
     filterable: false,
+    render: (text: string) => (
+      <a href={`mailto:${text}`} className="text-blue-600 hover:underline">
+        {text}
+      </a>
+    ),
   },
   {
     key: 'role',
@@ -89,10 +94,7 @@ export default function DataGridStaticPage() {
         columns={columnConfigs}
         data={initialUsers}
         totalSize={initialUsers.length}
-        filters={[]}
-        searchQuery={null}
         pagination={{page: 1, size: 10}}
-        sortConfig={null}
         enablePagination={true}
         rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}
       />

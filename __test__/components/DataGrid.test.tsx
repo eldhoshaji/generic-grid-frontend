@@ -1,7 +1,7 @@
 'use client';
 
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import DataGridStaticPage from '../../src/app/data-grid/page';
+import DataGridStaticPage from '../../src/app/sample-grid/page';
 import '@testing-library/jest-dom';
 
 describe('UsersStaticPage DataGrid tests', () => {

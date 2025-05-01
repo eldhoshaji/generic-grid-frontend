@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 interface SearchPopoverProps {
   value: string;
-  // onChange?: (value: string) => void;
   onApply: (value: string) => void;
 }
 
@@ -15,9 +14,6 @@ const SearchPopover: React.FC<SearchPopoverProps> = ({ value, onApply }) => {
 
   const handleChange = (val: string) => {
     setInternalValue(val);
-    // if (onChange) {
-    //   onChange(val); // emit on typing if provided
-    // }
   };
 
   const handleApply = () => {

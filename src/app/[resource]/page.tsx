@@ -96,24 +96,21 @@ export default function UsersPage() {
         setTableParams(newParams);
       }
     };
-  
+
     return (
-        <main className="p-8">
-        {loadingConfig || loadingUsers ? (
-            <div>Loading...</div>
-        ) : (
-          <DataGrid
-            columns={columnConfigs}
-            data={users}
-            totalSize={totalSize}
-            onChange={handleTableChange}
-            filters={Object.fromEntries(tableParams.filters.map(f => [f.key, f.value]))}
-            searchQuery={tableParams.search}
-            pagination={tableParams.pagination}
-            sortConfig={tableParams.sort}          
-            rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}
-          />
-        )}
-        </main>
+      <main className="p-2">
+        <DataGrid
+          loading={loadingConfig || loadingUsers }
+          columns={columnConfigs}
+          data={users}
+          totalSize={totalSize}
+          onChange={handleTableChange}
+          filters={Object.fromEntries(tableParams.filters.map(f => [f.key, f.value]))}
+          searchQuery={tableParams.search}
+          pagination={tableParams.pagination}
+          sortConfig={tableParams.sort}          
+          rowClass={(record) => getRowClassFromRules(record, rowStyleRules)}
+        />
+      </main>
     );
 }
