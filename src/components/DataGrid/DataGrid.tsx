@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DataGridProps } from '@/types/table';
 import FilterPopover from '@/components/DataGrid/components/FilterPopover';
 import SearchPopover from '@/components/DataGrid/components/SearchPopover';
@@ -31,6 +31,29 @@ function DataGrid<T>({
   const [pagination, setPagination] = useState(parentPagination);
 
   const totalPages = Math.ceil(totalSize / pagination.size);
+
+
+  const filterPopoverRef = useRef<HTMLDivElement | null>(null);
+  const searchPopoverRef = useRef<HTMLDivElement | null>(null);
+
+  // Close popovers if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterPopoverRef.current && !filterPopoverRef.current.contains(event.target as Node)) {
+        setOpenFilterPopover(null);
+      }
+      if (searchPopoverRef.current && !searchPopoverRef.current.contains(event.target as Node)) {
+        setOpenSearchPopover(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (onChange) {
@@ -178,7 +201,7 @@ function DataGrid<T>({
                           <Image src="/filter.png" alt="Filter Icon" width={12} height={12} />
                         </button>
                         {openFilterPopover === col.key && (
-                          <div className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
+                          <div ref={filterPopoverRef} className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
                             <FilterPopover
                               data-testid={`filter-popover-${col.key}`}
                               isOpen={true}
@@ -201,7 +224,7 @@ function DataGrid<T>({
                           <Image src="/search.png" alt="Search Icon" width={12} height={12} />
                         </button>
                         {openSearchPopover === col.key && (
-                          <div className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
+                          <div ref={searchPopoverRef} className="absolute z-10 mt-2 right-0 w-48 bg-white border border-gray-300 rounded shadow-lg">
                             <SearchPopover
                               data-testid={`search-popover-${col.key}`}
                               value={searchQuery?.value || ''}

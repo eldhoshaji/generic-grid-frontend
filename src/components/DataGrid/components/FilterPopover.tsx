@@ -1,5 +1,5 @@
 // components/FilterPopover.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface FilterPopoverProps {
   isOpen: boolean;
@@ -20,7 +20,18 @@ export default function FilterPopover({
   onFilterChange,
   onClose,
 }: FilterPopoverProps) {
+  const [localFilterValue, setLocalFilterValue] = useState(filters[dataIndex] || '');
+
+  useEffect(() => {
+    setLocalFilterValue(filters[dataIndex] || '');
+  }, [filters, dataIndex]);
+
   if (!isOpen) return null;
+
+  const handleApply = () => {
+    onFilterChange(dataIndex, localFilterValue);
+    onClose();
+  };
 
   return (
     <div
@@ -33,16 +44,16 @@ export default function FilterPopover({
           type="text"
           placeholder="Search..."
           className="block w-full p-2 mb-2 border rounded text-sm"
-          value={filters[dataIndex] || ''}
-          onChange={(e) => onFilterChange(dataIndex, e.target.value)}
+          value={localFilterValue}
+          onChange={(e) => setLocalFilterValue(e.target.value)}
         />
       )}
       {filterOptions && (
         <select
           className="block w-full p-2 mb-2 border rounded text-sm"
-          onChange={(e) => onFilterChange(dataIndex, e.target.value)}
           data-testid={`filter-select-${dataIndex}`}
-          value={filters[dataIndex] || ''}
+          value={localFilterValue}
+          onChange={(e) => setLocalFilterValue(e.target.value)}
         >
           {filterOptions.map((f) => (
             <option key={f.value} value={f.value}>
@@ -51,18 +62,18 @@ export default function FilterPopover({
           ))}
         </select>
       )}
-      <div className='flex gap-2'>
+      <div className="flex gap-2">
         <button
           data-testid="filter-popover-clear"
           className="block w-full mt-1 bg-red-400 text-white py-1 rounded text-sm"
-          onClick={()=>onFilterChange(dataIndex, null)}
+          onClick={() => {onFilterChange(dataIndex, null); onClose()}}
         >
           Clear
         </button>
         <button
           data-testid="filter-popover-apply"
           className="block w-full mt-1 bg-blue-400 text-white py-1 rounded text-sm"
-          onClick={onClose}
+          onClick={handleApply}
         >
           Apply
         </button>
