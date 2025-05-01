@@ -17,7 +17,7 @@ const SearchPopover: React.FC<SearchPopoverProps> = ({ value, onApply }) => {
   };
 
   const handleApply = () => {
-    onApply(internalValue); // emit only on Apply click
+    onApply(internalValue);
   };
 
   return (
@@ -30,13 +30,22 @@ const SearchPopover: React.FC<SearchPopoverProps> = ({ value, onApply }) => {
         value={internalValue}
         onChange={(e) => handleChange(e.target.value)}
       />
-      <button
-        data-testid="search-popover-apply"
-        className="block w-full mt-1 bg-blue-500 text-white py-1 rounded text-sm"
-        onClick={handleApply}
-      >
-        Apply
-      </button>
+      <div className="flex gap-2">
+        <button
+          data-testid="filter-popover-clear"
+          className="block w-full mt-1 bg-red-400 text-white py-1 rounded text-sm"
+          onClick={() => {onApply('')}}
+        >
+          Clear
+        </button>
+        <button
+          data-testid="filter-popover-apply"
+          className="block w-full mt-1 bg-blue-400 text-white py-1 rounded text-sm"
+          onClick={handleApply}
+        >
+          Apply
+        </button>
+      </div>
     </div>
   );
 };
