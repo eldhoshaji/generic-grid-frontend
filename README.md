@@ -70,6 +70,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Here’s a screenshot of the application:
 
-<img src="public/screenshots/s1.jpg" width="30%" />
-<img src="public/screenshots/s2.jpg" width="30%" />
-<img src="public/screenshots/s3.jpg" width="30%" />
+<img src="public/screenshots/s1.jpg" width="45%" />
+<img src="public/screenshots/s2.jpg" width="45%" />
+<img src="public/screenshots/s3.jpg" width="45%" />
