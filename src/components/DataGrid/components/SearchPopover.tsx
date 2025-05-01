@@ -32,14 +32,14 @@ const SearchPopover: React.FC<SearchPopoverProps> = ({ value, onApply }) => {
       />
       <div className="flex gap-2">
         <button
-          data-testid="filter-popover-clear"
+          data-testid="search-popover-clear"
           className="block w-full mt-1 bg-red-400 text-white py-1 rounded text-sm"
           onClick={() => {onApply('')}}
         >
           Clear
         </button>
         <button
-          data-testid="filter-popover-apply"
+          data-testid="search-popover-apply"
           className="block w-full mt-1 bg-blue-400 text-white py-1 rounded text-sm"
           onClick={handleApply}
         >
