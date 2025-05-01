@@ -33,7 +33,7 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
       return (
         <div>
           <h3 className="font-bold mb-2">Conditions</h3>
-          <p>Rows are highlighted based on the product's purchase date:</p>
+          <p>Rows are highlighted based on the product&apos;s purchase date:</p>
           <ul>
             <li>Red for products purchased before 2025</li>
           </ul>

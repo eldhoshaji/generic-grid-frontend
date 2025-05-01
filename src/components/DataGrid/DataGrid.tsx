@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataGridProps } from '@/types/table';
 import FilterPopover from '@/components/DataGrid/components/FilterPopover';
 import SearchPopover from '@/components/DataGrid/components/SearchPopover';
