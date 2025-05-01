@@ -6,7 +6,15 @@ Make sure you have [Node.js](https://nodejs.org/en) installed on your machine.
 
 ## Getting Started
 
-First, run the development server:
+First, install node modules:
+
+```bash
+npm install
+# or
+npm i
+```
+
+Now, run the development server:
 
 ```bash
 npm run dev
