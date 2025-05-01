@@ -1,7 +1,6 @@
 // types/TableTypes.ts
 export type ColumnType<T> = {
     title: string;
-    // dataIndex: keyof T;
     key: keyof T;
     render?: (value: any, record: T, index: number) => React.ReactNode;
     type?: 'text' | 'number' | 'date' | 'heatmap' | 'tags' | 'link' | 'datetime';
@@ -25,10 +24,11 @@ export type ColumnType<T> = {
       sortConfig: { key: string; direction: 'asc' | 'desc' } | null;
       pagination: { page: number, size: number };
     }) => void;  
-    filters: { [key: string]: any };
-    searchQuery: { key: string; value: string; } | null;  
-    sortConfig: { key: string; direction: 'asc' | 'desc' } | null;  
-    pagination: { page: number, size: number };
+    filters?: { [key: string]: any };
+    searchQuery?: { key: string; value: string; } | null;  
+    sortConfig?: { key: string; direction: 'asc' | 'desc' } | null;  
+    pagination?: { page: number, size: number };
     enablePagination?: boolean;
     rowClass?: (record: T, index: number) => string;
+    loading?: boolean;
   };

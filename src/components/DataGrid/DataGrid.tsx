@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DataGridProps } from '@/types/table';
 import FilterPopover from '@/components/DataGrid/components/FilterPopover';
 import SearchPopover from '@/components/DataGrid/components/SearchPopover';
@@ -8,6 +8,7 @@ import Link from '@/components/DataGrid/components/ColumnTypes/Link';
 import DateTime from '@/components/DataGrid/components/ColumnTypes/DateTime';
 import Image from 'next/image';
 import Pagination from '@/components/Datagrid/components/Pagination';
+import SkeletonRow from './components/Skelton';
 
 function DataGrid<T>({
   columns,
@@ -19,7 +20,8 @@ function DataGrid<T>({
   sortConfig: parentSortConfig = null,
   pagination: parentPagination = { page: 1, size: 10 },
   rowClass,
-  enablePagination = false
+  enablePagination = false,
+  loading = false
 }: DataGridProps<T>) {
   const [filters, setFilters] = useState<{ [key: string]: any }>(parentFilters);
   const [searchQuery, setSearchQuery] = useState<{ key: string; value: string } | null>(parentSearchQuery);
@@ -144,14 +146,15 @@ function DataGrid<T>({
         <thead className="bg-gray-100">
           <tr>
             {columns.map((col) => (
-              <th key={String(col.key)}   data-testid={`header-${col.key}`} className="relative p-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+              <th key={String(col.key)} data-testid={`header-${col.key}`} className="relative p-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                 <div className="flex items-center justify-between">
                   <span>{col.title}</span>
                   <div className="flex gap-2">
                     {col.sortable && (
                       <button 
                         data-testid={`sort-button-${col.key}`}
-                        onClick={() => handleSortChange(col.key)} className="text-gray-400 hover:text-gray-800 text-xs">
+                        onClick={() => handleSortChange(col.key)} 
+                        className="text-gray-400 hover:text-gray-800 text-xs cursor-pointer">
                         <Image
                           src={
                             sortConfig?.key === col.key
@@ -170,6 +173,7 @@ function DataGrid<T>({
                       <div>
                         <button 
                           data-testid={`filter-button-${col.key}`}
+                          className='cursor-pointer'
                           onClick={() => setOpenFilterPopover(openFilterPopover === col.key ? null : col.key)}>
                           <Image src="/filter.png" alt="Filter Icon" width={12} height={12} />
                         </button>
@@ -192,6 +196,7 @@ function DataGrid<T>({
                       <div>
                         <button 
                           data-testid={`search-button-${col.key}`}
+                          className='cursor-pointer'
                           onClick={() => setOpenSearchPopover(openSearchPopover === col.key ? null : col.key)}>
                           <Image src="/search.png" alt="Search Icon" width={12} height={12} />
                         </button>
@@ -216,22 +221,34 @@ function DataGrid<T>({
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((record, index) => {
-            const dynamicClass = rowClass ? rowClass(record, index) : '';
-            return (
-              <tr data-testid={`row-${index}`} key={index} className={`hover:bg-gray-50 ${dynamicClass}`}>
-                {columns.map((col) => {
-                  type DataRecord = Record<string, any>; // allows string-keyed access
-                  const value = (record as DataRecord)[col.key];
-                  return (
-                    <td key={String(col.key)} data-testid={`cell-${index}-${col.key}`} className="h-12 text-sm text-gray-700 border-b border-gray-200">
-                      {renderCell(value, col, record, index, 'px-4')}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+        { loading ? (
+            Array(10).fill(0).map((_, index) => (
+              <SkeletonRow key={index} columns={columns} />
+            ))
+          ) : paginatedData.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center h-50 py-4 text-gray-500 bg-gray-50">
+               No data available
+              </td>
+            </tr>
+          ) : (
+            paginatedData.map((record, index) => {
+              const dynamicClass = rowClass ? rowClass(record, index) : '';
+              return (
+                <tr data-testid={`row-${index}`} key={index} className={`hover:bg-gray-50 ${dynamicClass}`}>
+                  {columns.map((col) => {
+                    type DataRecord = Record<string, any>; // allows string-keyed access
+                    const value = (record as DataRecord)[col.key];
+                    return (
+                      <td key={String(col.key)} data-testid={`cell-${index}-${col.key}`} className="h-12 text-sm text-gray-700 border-b border-gray-200">
+                        {renderCell(value, col, record, index, 'px-4')}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
 
